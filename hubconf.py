@@ -203,3 +203,5 @@ def evaluation(test_loader):
         
 
   print(f'Accuracy of the network on the 10000 test images: {100 * correct // total} %')
+
+evaluation(test_dataloader)
