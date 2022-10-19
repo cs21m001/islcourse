@@ -16,6 +16,17 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from sklearn.metrics import classification_report, confusion_matrix, precision_score
+from torch.utils.data import Dataset, DataLoader
+
+
+from torchvision import datasets
+from torchvision.transforms import ToTensor, ToPILImage
+from PIL import Image
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+transform_tensor_to_pil = ToPILImage()
+transform_pil_to_tensor = ToTensor()
 
 
 transform = transforms.Compose(
@@ -25,11 +36,44 @@ transform = transforms.Compose(
 batch_size = 4
 
 def trainTest():
-  trainset = torchvision.datasets.CIFAR10(root='./data', train=True,
+  training_data = torchvision.datasets.CIFAR10(root='./data', train=True,
                                         download=True, transform=transform)
-  testset = torchvision.datasets.CIFAR10(root='./data', train=False,
+  test_data = torchvision.datasets.CIFAR10(root='./data', train=False,
                                        download=True, transform=transform)
-  return trainset, testset
+  return training_data, test_data
 
 
-train_set, test_set = trainTest()
+training_data, test_data = trainTest()
+
+class ModifiedDataset(Dataset):
+  def __init__(self,given_dataset,shrink_percent=10):
+    self.given_dataset = given_dataset
+    self.shrink_percent = shrink_percent
+    
+  def __len__(self):
+    return len(self.given_dataset)
+
+  def __getitem__(self,idx):
+    img, lab = self.given_dataset[idx]
+
+    # print (type(img))
+    # print (img.shape)
+
+    img2 = transform_tensor_to_pil(img.squeeze())
+
+    # print (img2.size)
+    
+    new_w = int(img2.size[0]*(1-self.shrink_percent/100.0))
+    new_h = int(img2.size[1]*(1-self.shrink_percent/100.0))
+
+    # print (new_w, new_h)
+
+    img3 = img2.resize((new_w,new_h))
+
+    # print (img3.size)
+
+    x = transform_pil_to_tensor(img3)
+
+    # print (x.shape)
+
+    return x,lab
