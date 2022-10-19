@@ -89,3 +89,117 @@ def loader(mod_train_data, mod_test_data):
   test_dataloader = torch.utils.data.DataLoader(test_data, batch_size=batch_size,
                                          shuffle=False, num_workers=2)
   return train_dataloader, test_dataloader
+
+
+train_dataloader, test_dataloader = loader(training_data, test_data)
+
+#model
+class get_model_advanced(nn.Module):
+    def __init__(self, numchannels, classes):
+        super().__init__()
+        self.conv1 = nn.Conv2d(numchannels, 6, 5)
+        self.pool = nn.MaxPool2d(2, 2)
+        self.conv2 = nn.Conv2d(6, 16, 5)
+        self.fc1 = nn.Linear(16 * 5 * 5, 120)
+        self.fc2 = nn.Linear(120, 84)
+        self.fc3 = nn.Linear(84, classes)
+
+    def forward(self, x):
+        x = self.pool(F.relu(self.conv1(x)))
+        x = self.pool(F.relu(self.conv2(x)))
+        x = torch.flatten(x, 1) # flatten all dimensions except batch
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        x = self.fc3(x)
+        return x
+
+model = get_model_advanced(numchannels = 3, classes =10)
+
+#define loss function and optimizer
+def lossFunction_and_optimizer():
+  criterion = nn.CrossEntropyLoss()
+  optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
+  return criterion, optimizer
+
+criteria, optimize = lossFunction_and_optimizer()
+
+#train the network
+def train_model(train_dataloader, optimize,criteria, e):
+  for epoch in range(e):  # loop over the dataset multiple times
+
+    running_loss = 0.0
+    for i, data in enumerate(train_dataloader, 0):
+        # get the inputs; data is a list of [inputs, labels]
+        inputs, labels = data
+
+        # zero the parameter gradients
+        optimize.zero_grad()
+
+        # forward + backward + optimize
+        outputs = model(inputs)
+        loss = criteria(outputs, labels)
+        loss.backward()
+        optimize.step()
+
+        # print statistics
+        running_loss += loss.item()
+        if i % 2000 == 1999:    # print every 2000 mini-batches
+            print(f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss / 2000:.3f}')
+            running_loss = 0.0
+
+  print('Finished Training')
+
+
+train_model(train_dataloader, optimize, criteria,2)
+
+def saveModel():
+  PATH = './cifar_net.pth'
+  torch.save(model.state_dict(), PATH)
+
+saveModel()
+
+def imshow(img):
+    img = img / 2 + 0.5     # unnormalize
+    npimg = img.numpy()
+    plt.imshow(np.transpose(npimg, (1, 2, 0)))
+    plt.show()
+
+classes = ('plane', 'car', 'bird', 'cat',
+           'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
+
+def test_model(test_dataloader):
+  dataiter = iter(test_dataloader)
+  images, labels = dataiter.next()
+
+  # print images
+  imshow(torchvision.utils.make_grid(images))
+  print('GroundTruth: ', ' '.join(f'{classes[labels[j]]:5s}' for j in range(4)))
+  return images
+
+image = test_model(test_dataloader)
+
+def loadModel(PATH):
+  net1 = get_model_advanced(3,10)
+  net1.load_state_dict(torch.load(PATH))
+  return net1
+net2 = loadModel('./cifar_net.pth')
+
+outputs = net2(image)
+
+# how the neural network perform
+def evaluation(test_loader):
+  correct = 0
+  total = 0
+  # since we're not training, we don't need to calculate the gradients for our outputs
+  with torch.no_grad():
+      for data in test_loader:
+          images, labels = data
+          # calculate outputs by running images through the network
+          outputs = net(images)
+          # the class with the highest energy is what we choose as prediction
+          _, predicted = torch.max(outputs.data, 1)
+          total += labels.size(0)
+          correct += (predicted == labels).sum().item()
+        
+
+  print(f'Accuracy of the network on the 10000 test images: {100 * correct // total} %')
