@@ -77,3 +77,15 @@ class ModifiedDataset(Dataset):
     # print (x.shape)
 
     return x,lab
+
+
+mod_train_data = ModifiedDataset(training_data)
+mod_test_data = ModifiedDataset(test_data)
+
+#we have to work on modified data 
+def loader(mod_train_data, mod_test_data):
+  train_dataloader = torch.utils.data.DataLoader(training_data, batch_size=batch_size,
+                                          shuffle=True, num_workers=2)
+  test_dataloader = torch.utils.data.DataLoader(test_data, batch_size=batch_size,
+                                         shuffle=False, num_workers=2)
+  return train_dataloader, test_dataloader
