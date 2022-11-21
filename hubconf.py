@@ -27,37 +27,22 @@ def get_data_blobs(n_points=100):
 
 def get_data_circles(n_points=100):
   pass
-  # write your code here
-  # Refer to sklearn data sets
   X, y = make_circles(n_samples = n_points)
-  # write your code ...
   return X,y
 
 def get_data_mnist():
-  
-  # write your code here
-  # Refer to sklearn data sets
-  
   digits= load_digits()
   X = digits.data
   y = digits.target
-  
-  # write your code ...
   return X,y
 
 def build_kmeans(X=None,k=10):
   pass
-  # k is a variable, calling function can give a different number
-  # Refer to sklearn KMeans method
   km = KMeans(n_clusters=k).fit(X)
-  # write your code ...
   return km
 
 def assign_kmeans(km=None,X=None):
   pass
-  # For each of the points in X, assign one of the means
-  # refer to predict() function of the KMeans in sklearn
-  # write your code ...
   ypred = km.predict(X)
   return ypred
 
@@ -68,7 +53,7 @@ def compare_clusterings(ypred_1=None,ypred_2=None):
   v=v_measure_score(ypred_1,ypred_2)
   return h,c,v
 
-#part2
+#####part2########
 
 
 
