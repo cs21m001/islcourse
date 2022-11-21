@@ -20,12 +20,15 @@ from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_sc
 from sklearn import metrics
 from sklearn import preprocessing
 from sklearn import model_selection
+from torchvision.transforms import ToTensor
+import torch.nn.functional as Fun
 # You can import whatever standard packages are required
 
 # full sklearn, full pytorch, pandas, matplotlib, numpy are all available
 # Ideally you do not need to pip install any other packages!
 # Avoid pip install requirement on the evaluation program side, if you use above packages and sub-packages of them, then that is fine!
 
+device = "cuda" if torch.cuda.is_available() else "cpu"
 ###### PART 1 #######
 
 def get_data_blobs(n_points=100):
