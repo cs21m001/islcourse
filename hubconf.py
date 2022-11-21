@@ -191,6 +191,8 @@ def get_mynn(inp_dim=64,hid_dim=13,num_classes=10):
   mynn = MyNN(inp_dim,hid_dim,num_classes)
   mynn.double()
   return mynn
+
+
 def get_mnist_tensor():
   X, y = None, None
   # write your code
