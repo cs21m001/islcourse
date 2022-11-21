@@ -26,7 +26,7 @@ from sklearn import model_selection
 # Ideally you do not need to pip install any other packages!
 # Avoid pip install requirement on the evaluation program side, if you use above packages and sub-packages of them, then that is fine!
 
-###### PART 1 ######
+###### PART 1 #######
 
 def get_data_blobs(n_points=100):
   pass
