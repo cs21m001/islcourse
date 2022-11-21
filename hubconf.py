@@ -59,7 +59,7 @@ def compare_clusterings(ypred_1=None,ypred_2=None):
 
 #####part2########
 def build_lr_model(X=None, y=None):
-  lr_model = LogisticRegression()
+  lr_model = LogisticRegression(solver='liblinear')
   # write your code...
   # Build logistic regression, refer to sklearn
   if X.ndim > 2:
