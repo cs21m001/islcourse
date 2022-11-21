@@ -129,6 +129,19 @@ def get_paramgrid_rf():
   return rf_param_grid
 
 
+def perform_gridsearch_cv_multimetric(model=None, param_grid=None, cv=5, X=None, y=None, metrics=['accuracy','roc_auc']):
+  top1_scores = []
+  
+  if X.ndim > 2:
+      n_samples = len(X)
+      X= X.reshape((n_samples, -1))
+      
+  for score in metrics:
+      grid_search_cv = GridSearchCV(model,param_grid,scoring = score,cv=cv)
+      grid_search_cv.fit(X,y)
+      top1_scores.append(grid_search_cv.best_estimator_.get_params())
+      
+  return top1_scores
   
   
   
