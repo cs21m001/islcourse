@@ -29,10 +29,14 @@ def get_data_circles(n_points=100):
   return X,y
 
 def get_data_mnist():
-  pass
+  
   # write your code here
   # Refer to sklearn data sets
-  X,y = None
+  
+  digits= load_digits()
+  X = digits.data
+  y = digits.target
+  
   # write your code ...
   return X,y
 
@@ -40,7 +44,7 @@ def build_kmeans(X=None,k=10):
   pass
   # k is a variable, calling function can give a different number
   # Refer to sklearn KMeans method
-  km = None # this is the KMeans object
+  km = KMeans(n_clusters=k).fit(X)
   # write your code ...
   return km
 
@@ -49,13 +53,14 @@ def assign_kmeans(km=None,X=None):
   # For each of the points in X, assign one of the means
   # refer to predict() function of the KMeans in sklearn
   # write your code ...
-  ypred = None
+  ypred = km.predict(X)
   return ypred
 
 def compare_clusterings(ypred_1=None,ypred_2=None):
   pass
-  # refer to sklearn documentation for homogeneity, completeness and vscore
-  h,c,v = 0,0,0 # you need to write your code to find proper values
+  h=homogeneity_score(ypred_1,ypred_2)
+  c=completeness_score(ypred_1,ypred_2)
+  v=v_measure_score(ypred_1,ypred_2)
   return h,c,v
 
 ###### PART 2 ######
